@@ -1,0 +1,51 @@
+{
+  "depositi": {
+    "id_deposito": ["depositi", "id_deposito"],
+    "descr_dep": ["depositi", "deposito"]
+  },
+  "agenti": {
+    "id": ["agenti", "id"],
+    "agente": ["agenti", "agente"]
+  },
+  "categorie": {
+    "id": ["categorie", "id"]
+  },
+  "clienti": {
+    "agente": ["clienti", "id"],
+    "numconto": ["clienti", "id"],
+    "id_deposito": ["clienti", "id_depositi"],
+    "ragione_sociale": ["clienti", "ragione_sociale"],
+    "codice_fiscale": ["clienti", "codice_fiscale"],
+    "piva": ["clienti", "piva"],
+    "um_clienti": ["clienti", "created_at"]
+  },
+  "clienti_indirizzi": {
+    "numconto": ["clienti_indirizzi", "id_cliente"],
+    "via": ["clienti_indirizzi", "via"],
+    "citta": ["clienti_indirizzi", "citta"],
+    "provincia": ["clienti_indirizzi", "provincia"],
+    "cap": ["clienti_indirizzi", "cap"],
+    "stato": ["clienti_indirizzi", "stato"],
+    "note": ["clienti_indirizzi", "note"]
+  },
+  "prodotti_listini": {
+    "id_prodotto": ["prodotti_listini","listin"],
+    "listino": ["prodotti_listini", "id_prodotto"],
+    "netto": ["prodotti_listini", "prezzo"],
+    "umd": ["prodotti_listini", "created_at"]
+  },
+  "prodotti": {
+    "listino": ["prodotti", "id"],
+    "sottogruppo": ["prodotti", "id_categoria"],
+    "new": ["prodotti", "new"],
+    "oe-am": ["prodotti", "oeam"],
+    "descrizione": ["prodotti", "text"],
+    "id": ["prodotti", "id_catalogo"]
+  },
+  "prodotti_giacenze": {
+    "riferimento": ["prodotti_giacenze", "id_prodotto"],
+    "id_deposito": ["prodotti_giacenze", "id_deposito"],
+    "stato": ["prodotti_giacenze", "stato"],
+    "umd": ["prodotti_giacenze", "created_at"]
+  }
+}
