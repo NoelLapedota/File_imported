@@ -1,7 +1,7 @@
 // const connection = require("../connectMySQL");
 const fs = require("fs");
 
-const storico = require("./storico.json");
+const storico = require("./model/storico.json");
 
 
 const genereteJson = () => {
@@ -10,7 +10,7 @@ const genereteJson = () => {
 
     const json = JSON.stringify(obj);
 
-    fs.writeFileSync ("./storico.json", json);
+    fs.writeFileSync ("./model/storico.json", json);
 
 
 };
