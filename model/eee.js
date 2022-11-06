@@ -1,7 +1,7 @@
 // const connection = require("../connectMySQL");
 const fs = require("fs");
 
-const storico = require("./model/storico.json");
+// const storico = require("./model/storico.json");
 
 
 const genereteJson = () => {
