@@ -61,5 +61,5 @@ const empty = (folder) => {
 module.exports = {
   importFile,
   empty,
-  removeDir
+  removeDir,
 };

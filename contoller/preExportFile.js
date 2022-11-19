@@ -1,6 +1,5 @@
 const { json } = require("express");
 const fs = require("fs-extra");
-
 const specificOrder = {
   storage: "depositi",
   storages: "depositi",
@@ -10,11 +9,11 @@ const specificOrder = {
   clientsAddresses: "clienti_indirizzi",
   products: "prodotti",
   list: "prodotti_listini",
-  stocks: "prodotti_giacenze"
+  stocks: "prodotti_giacenze",
 };
 
 //search for json files in order of insertion
-const orderOfInsertion = async (queryCreation) => {
+const orderOfInsertion = async (connection, queryCreation) => {
   try {
     const folder = fs.readdirSync("./samples/working", "utf8");
     for (let i = 0; i < folder.length; i++) {
@@ -31,14 +30,12 @@ const orderOfInsertion = async (queryCreation) => {
             "utf8"
           );
           const fileParse = JSON.parse(file);
-
-          const creationQuery = await queryCreation(tableName, fileParse);
+          queryCreation(connection, tableName, fileParse, i);
         }
 
-        // fs.removeSync(`./samples/working/${folder[i]}/${found}`)
+        fs.removeSync(`./samples/working/${folder[i]}/${found}`);
       }
     }
-    
   } catch (error) {
     console.error;
   }

@@ -10,10 +10,7 @@ const checkController = async (json, file) => {
         (propietyOfReadFileJsonFromWorking) => {
           const keyWorking = Object.keys(propietyOfReadFileJsonFromWorking);
           const keySchema = Object.keys(elementSchema);
-          // console.log(json)
-          // console.log( keySchema)
-          // console.log('-----------------------------------------------------------------')
-          // console.log(keyWorking)
+
           for (let r = 0; r < keySchema.length; r++) {
             for (let t = 0; t < keyWorking.length; t++) {
               if (!keySchema[r] === keyWorking[t])
@@ -55,5 +52,5 @@ const workingAnalyzer = async (checkController) => {
 
 module.exports = {
   checkController,
-  workingAnalyzer
+  workingAnalyzer,
 };

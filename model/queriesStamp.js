@@ -1,46 +1,30 @@
 const addressings = require("./addressings.json");
-const notImportedFile = require("./queries");
-const connection = require("../connectMySQL");
-const dataForJson = require("./qu");
+const notImportedFile = require("./insert.js");
 
+const insert = require("./insert");
+const queries = require("./queries");
 
-
-const insert = (query, tableName) => {
-  connection.query(`${query}`, function (err, result, fields) {
-    // console.log(`File ${query} imported into File_importDb!!!`);
-    // connection.query("select count(*) AS TotalRows from clienti");
-    if (err) throw err;
-    if (result.insertId != 0) {
-      const imported = {
-        tab: tableName,
-        idInsideTable: result.insertId,
-      };
-      
-      dataForJson(tableName, result.insertId);
-    }
-  });
-};
-
-//----------------------------------------------------------------------------------------------
-
-const queryCreation = (tableName, fileParse) => {
+const queryCreation = (connection, tableName, fileParse, i) => {
   try {
     //if the keys of the file to be imported are in the json file, they are rewritten so that they can then be correctly stacked,
     // otherwise they are deleted from the obj !!
+    //this value in the table is a var5 and is not critical
+    //if you decide to correct the table these rows should be deleted!
     fileParse.forEach((obj) => {
       if (obj["id_prodotto"] && tableName === "prodotti_listini") {
         obj["id_prodotto"] = "list";
       }
+
       for (key in obj) {
         const addressingsIndex = addressings[tableName][key];
         if (addressingsIndex) {
           //Unimported files go here!!
-          // if (Object.keys(obj).includes(key)) {
-          //   const el = Object.keys(obj);
-          //   const arr = el.filter((item) => item !== key);
-          //   const json = JSON.stringify(arr);
-          //   notImportedFile(tableName, json);
-          // }
+          if (Object.keys(obj).includes(key)) {
+            const el = Object.keys(obj);
+            const arr = el.filter((item) => item !== key);
+            const json = JSON.stringify(arr);
+            notImportedFile.notImportedFile(tableName, json);
+          }
           //if the file is to be inserted in another table
           if (key != addressingsIndex[1]) {
             obj[addressingsIndex[1]] = obj[key];
@@ -67,12 +51,11 @@ const queryCreation = (tableName, fileParse) => {
       //adds the final parenthesis !!
       result += ")";
 
-      insert(result, tableName);
-      // console.log(result);
+      insert.insert(connection, result, tableName, i);
     });
   } catch (err) {
     console.err;
   }
 };
 
-module.exports = queryCreation
+module.exports = queryCreation;

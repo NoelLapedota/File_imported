@@ -1,42 +1,66 @@
-// // const userRoutes = require('./routes')
-// // const cron = require('node-cron');
+const CronJob  = require('cron').CronJob;
 const express = require("express");
 const app = express();
-// // app.use(bodyParser.json());
-// // const connection = require("./connectMySQL");
-// const orderOfInsertion = require("./contoller/preExportFile.js");
-// const insert = require("./model/queriesStamp");
-// const queryCreation = require("./model/queriesStamp");
-const genereteJson = require('./model/eee')
+const cronologyRouting = require("./Routing/cronologyRouting.js");
+const orderOfInsertion = require("./contoller/preExportFile.js");
+const queryCreation = require("./model/queriesStamp.js");
+const pushToCronology = require("./model/insert.js");
+const db = require("./connectMySQL");
+const globalErrorHendler = require("./contoller/errorController");
+const { importFile, removeDir, empty } = require("./contoller/import_file.js");
+const {
+  checkController,
+  workingAnalyzer,
+} = require("./contoller/checkModule.js");
+
+//--------------------------------------------------------------------------------------------------------
+
+const job = new CronJob('05 * * * * *', function () {
+  db().then((connection) => {
+    console.log("connection to db completed!!");
+    return connection;
+  });
+  importFile(empty)
+    .then((data) => removeDir("./samples/files"))
+    .then((data) => workingAnalyzer(checkController))
+    .then((data) => {
+      orderOfInsertion(data, queryCreation);
+      return data;
+    })
+    .then((data, array) => {
+      pushToCronology(data, array);
+    })
+    .then((data) => {
+      console.log("All files have been successfully imported and analyzed !!!");
+    })
+
+    .catch((err) => {
+      console.log("error!", err);
+      throw err;
+    });
+});
+
+job.start();
+
+//--------------------------------------------------------------------------------------------------------------------
 
 
-// const table = require("./model/queries");
-// // const createmodule = require('./contoller/createModule.js')
-// const { importFile, removeDir, empty } = require("./contoller/import_file.js");
+const router = express.Router();
 
-// const {
-//   checkController,
-//   workingAnalyzer
-// } = require("./contoller/checkModule.js");
-// importFile(empty)
-// .then(data =>removeDir('./samples/files'))
-// .then(data =>workingAnalyzer(checkController))
-// .then(data =>orderOfInsertion())
+const port = process.env.PORT || 3000;
 
-// orderOfInsertion(queryCreation)
-// .then(data => genereteJson(data))
+app.use("/cronology", cronologyRouting);
 
-// genereteJson()
-// .then(data =>queryCreation(insert))
+app.all("*", (req, res, next) => {
+  const err = new Error(`Can't find ${req.originalUrl} on this server!`);
+  (err.status = "fail"), (err.status.code = 404);
 
-//    cron.schedule('05 * * * *', function() {
-// importFile(empty)
-// // .then(data =>removeDir('./samples/files'))
-// .then(data =>workingAnalyzer(checkController));
+  next(err);
+});
 
-//     console.log('All files have been successfully imported and analyzed !!!');
+app.use(globalErrorHendler);
 
-// });
-
-genereteJson()
-
+app.listen(port, (err) => {
+  if (err) console.log("ERROR", err);
+  console.log(`App running on port ${port}`);
+});
