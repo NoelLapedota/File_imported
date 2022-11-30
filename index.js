@@ -1,4 +1,4 @@
-const CronJob  = require('cron').CronJob;
+const CronJob = require("cron").CronJob;
 const express = require("express");
 const app = express();
 const cronologyRouting = require("./Routing/cronologyRouting.js");
@@ -15,25 +15,36 @@ const {
 
 //--------------------------------------------------------------------------------------------------------
 
-const job = new CronJob('05 * * * * *', function () {
-  db().then((connection) => {
-    console.log("connection to db completed!!");
-    return connection;
-  });
-  importFile(empty)
-    .then((data) => removeDir("./samples/files"))
-    .then((data) => workingAnalyzer(checkController))
-    .then((data) => {
-      orderOfInsertion(data, queryCreation);
-      return data;
+const job = new CronJob("05 * * * * *", function () {
+  db()
+    .then((connection) => {
+      console.log("connection to db completed!!");
+      return connection;
     })
-    .then((data, array) => {
-      pushToCronology(data, array);
-    })
-    .then((data) => {
-      console.log("All files have been successfully imported and analyzed !!!");
+    .then((connection) => {
+      importFile(empty);
+      return connection;
     })
 
+    .then((connection) => {
+      workingAnalyzer(checkController);
+      return connection;
+    })
+    .then(async (connection) => {
+      const resultPromise = await orderOfInsertion(connection, queryCreation);
+      console.log("result promise", resultPromise);
+      return {
+        connection,
+        resultPromise,
+      };
+    })
+    .then(async ({ connection, resultPromise }) => {
+      console.log("push to cronology", resultPromise);
+      await pushToCronology(connection, resultPromise);
+    })
+    .then(() => {
+      removeDir("./samples/files");
+    })
     .catch((err) => {
       console.log("error!", err);
       throw err;
@@ -44,11 +55,12 @@ job.start();
 
 //--------------------------------------------------------------------------------------------------------------------
 
-
 const router = express.Router();
 
 const port = process.env.PORT || 3000;
-
+app.get("/", (req, res) => {
+  res.send("Home page");
+});
 app.use("/cronology", cronologyRouting);
 
 app.all("*", (req, res, next) => {

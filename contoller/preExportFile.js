@@ -24,18 +24,19 @@ const orderOfInsertion = async (connection, queryCreation) => {
         const found = json.find((element) => element === fullName);
         if (found === fullName) {
           const tableName = specificOrder[specificOrderArray[w]];
-
           const file = await fs.readFile(
             `./samples/working/${folder[i]}/${fullName}`,
             "utf8"
           );
           const fileParse = JSON.parse(file);
-          queryCreation(connection, tableName, fileParse, i);
+
+          queryCreation(connection, tableName, fileParse, folder[i]);
         }
 
-        fs.removeSync(`./samples/working/${folder[i]}/${found}`);
+        // fs.removeSync(`./samples/working/${folder[i]}/${found}`);
       }
     }
+    return await folder;
   } catch (error) {
     console.error;
   }

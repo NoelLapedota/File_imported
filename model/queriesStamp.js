@@ -4,13 +4,15 @@ const notImportedFile = require("./insert.js");
 const insert = require("./insert");
 const queries = require("./queries");
 
-const queryCreation = (connection, tableName, fileParse, i) => {
+const queryCreation = async (connection, tableName, fileParse, folder) => {
   try {
+
     //if the keys of the file to be imported are in the json file, they are rewritten so that they can then be correctly stacked,
     // otherwise they are deleted from the obj !!
     //this value in the table is a var5 and is not critical
     //if you decide to correct the table these rows should be deleted!
-    fileParse.forEach((obj) => {
+    const results = fileParse.map(async (obj) => {
+
       if (obj["id_prodotto"] && tableName === "prodotti_listini") {
         obj["id_prodotto"] = "list";
       }
@@ -50,9 +52,9 @@ const queryCreation = (connection, tableName, fileParse, i) => {
       let result = query.slice(0, -1);
       //adds the final parenthesis !!
       result += ")";
-
-      insert.insert(connection, result, tableName, i);
+      return await insert.insert(connection, result, tableName, folder); 
     });
+    return await Promise.all(results)
   } catch (err) {
     console.err;
   }

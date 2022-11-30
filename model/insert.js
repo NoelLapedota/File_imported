@@ -1,25 +1,26 @@
 //Questa funzionae non fa ancora il suo lavoro perchè nell index parte prima delle altre, probabilmente qualche problema di promises
-const pushToCronology = async (connection, array) => {
+const pushToCronology = async (connection, folder) => {
   try {
-    console.log(array);
-    // for (const el of array) {
-    //   const [rows, fields] = await connection.query(queries.selectTemporany, [
-    //     el,
-    //   ]);
+    console.log(folder);
+    await setTimeout(async function () {
+      for (const el of folder) {
+        const [rows] = await connection.query(queries.selectTemporany, [el]);
+        const imported = rows[0]["dati"];
+        const arrayWithImportedFfiles = [];
 
-    //   const imported = rows[0]["dati"];
-    //   if (!array.includes(imported)) array.push(imported);
-    //   const quantytOfFile = array.length;
-    //   await connection.query(queries.dataImported);
+        if (!arrayWithImportedFfiles.includes(imported))
+          arrayWithImportedFfiles.push(imported);
+        const quantytOfFile = arrayWithImportedFfiles.length;
 
-    //   const parse = JSON.stringify(value[0]);
-    //   await connection.query(queries.addDataImported, [array, quantytOfFile]);
-    // }
+        await connection.query(queries.dataImported);
 
-    // // fs.writeFile("./model/cronology.json", {}, "utf8", function (err) {
-    // //   if (err) console.log(err);
-    // // });
-    // fs.writeFile("../samples/working");
+        const parse = JSON.stringify(arrayWithImportedFfiles);
+
+        await connection.query(queries.addDataImported, [parse, quantytOfFile]);
+        fs.remove(`./samples/working/${el}`);
+      }
+      console.log("All files have been successfully imported and analyzed !!!");
+    }, 1000);
   } catch (err) {
     console.err;
   }
@@ -30,36 +31,25 @@ module.exports = pushToCronology;
 //----------------------------------------------------------------------------------------------
 const connection = require("../connectMySQL.js");
 const queries = require("./queries.js");
+const fs = require("fs-extra");
 
 //----------------------------------------------------------------------------------------------
 
-const insert = async (connection, query, tableName, i) => {
+const insert = async (connection, query, tableName, folder) => {
   try {
     const [rows, fields] = await connection.query(`${query}`);
     if (rows.affectedRows > 0) {
       await connection.query(queries.temporayTable);
       const [rows, fields] = await connection.query(queries.addTemporany, [
         tableName,
-        i,
+        folder,
       ]);
-      const folderArray = [0, 1];
-
-      if (!folderArray.includes(i)) folderArray.push(i);
-
-      for (const el of folderArray) {
-        const [rows, fields] = await connection.query(queries.selectTemporany, [
-          el,
-        ]);
-      }
-      console.log(folderArray);
-      return folderArray;
     }
   } catch (err) {
-    console.err;
+    console.log(err);
   }
 };
 module.exports.insert = insert;
-const fs = require("fs");
 const array = [];
 const folderArray = [];
 

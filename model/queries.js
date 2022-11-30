@@ -9,7 +9,7 @@ const createTable = `CREATE TABLE  if not exists file_non_importati(
 const add =
   "INSERT IGNORE INTO file_non_importati(nome_tabella, non_neccessari) VALUES (?, ?)";
 const temporayTable =
-  "CREATE TEMPORANY  TABLE if not exists temporany (id int(255) primary key NOT NULL AUTO_INCREMENT, dati varchar(255) NOT NULL, folder int(255))";
+  "CREATE  TEMPORARY  TABLE if not exists temporany (id int(255) primary key NOT NULL AUTO_INCREMENT, dati varchar(255) NOT NULL, folder int(255))";
 const addTemporany =
   "INSERT IGNORE INTO temporany (dati, folder) VALUES (?, ?)";
 const addDataImported = `INSERT IGNORE INTO dataImported(dati_importati, file_number ) VALUES (?, ?)`;
