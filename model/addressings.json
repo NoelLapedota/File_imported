@@ -29,7 +29,7 @@
     "note": ["clienti_indirizzi", "note"]
   },
   "prodotti_listini": {
-    "id_prodotto": ["prodotti_listini","listin"],
+    "id_prodotto": ["prodotti_listini", "listino"],
     "listino": ["prodotti_listini", "id_prodotto"],
     "netto": ["prodotti_listini", "prezzo"],
     "umd": ["prodotti_listini", "created_at"]

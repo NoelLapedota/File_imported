@@ -9,7 +9,7 @@ const importFile = async (empty) => {
       let stats = await fs.lstatSync(`./samples/files/${content[i]}`, "utf-8");
       // //all files are filtered
       if (stats.isFile()) {
-        const remove = await fs.removeSync(`./samples/files/${content[i]}`);
+        // const remove = await fs.removeSync(`./samples/files/${content[i]}`);
         console.log(`./samples/files/${content[i]} removed!!'`);
       }
       //empty folders are filtered

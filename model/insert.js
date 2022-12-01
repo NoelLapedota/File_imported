@@ -1,31 +1,40 @@
-//Questa funzionae non fa ancora il suo lavoro perchè nell index parte prima delle altre, probabilmente qualche problema di promises
+//The data entered are first imported into temporary, afterwards they are inserted in an array and inserted in a folder of the historic_dati
 const pushToCronology = async (connection, folder) => {
   try {
-    console.log(folder);
     await setTimeout(async function () {
       for (const el of folder) {
-        const [rows] = await connection.query(queries.selectTemporany, [el]);
-        const imported = rows[0]["dati"];
         const arrayWithImportedFfiles = [];
 
-        if (!arrayWithImportedFfiles.includes(imported))
-          arrayWithImportedFfiles.push(imported);
-        const quantytOfFile = arrayWithImportedFfiles.length;
+        const [rows] = await connection.query(queries.selectTemporany, [el]);
+        rows.forEach((element) => {
+          if (!arrayWithImportedFfiles.includes(element.dati)) {
+            arrayWithImportedFfiles.push(element.dati);
+          }
+          arrayWithImportedFfiles.push(element.dati);
+        });
+        const unique = Array.from(new Set(arrayWithImportedFfiles));
+
+        const quantytOfFile = unique.length;
 
         await connection.query(queries.dataImported);
 
-        const parse = JSON.stringify(arrayWithImportedFfiles);
-
-        await connection.query(queries.addDataImported, [parse, quantytOfFile]);
-        fs.remove(`./samples/working/${el}`);
+        const parse = JSON.stringify(unique);
+        if (quantytOfFile >= 1) {
+          await connection.query(queries.addDataImported, [
+            parse,
+            quantytOfFile,
+          ]);
+          console.log(queries.addDataImported, [parse, quantytOfFile]);
+        }
       }
       console.log("All files have been successfully imported and analyzed !!!");
-    }, 1000);
+      await connection.query(queries.deleteTemporany);
+      fs.remove("./samples/working");
+    }, 5000);
   } catch (err) {
     console.err;
   }
 };
-
 module.exports = pushToCronology;
 
 //----------------------------------------------------------------------------------------------
@@ -33,32 +42,29 @@ const connection = require("../connectMySQL.js");
 const queries = require("./queries.js");
 const fs = require("fs-extra");
 
-//----------------------------------------------------------------------------------------------
-
 const insert = async (connection, query, tableName, folder) => {
   try {
+    await connection.query(queries.temporayTable);
+    await connection.query(queries.temporayTable);
+
     const [rows, fields] = await connection.query(`${query}`);
     if (rows.affectedRows > 0) {
-      await connection.query(queries.temporayTable);
-      const [rows, fields] = await connection.query(queries.addTemporany, [
-        tableName,
-        folder,
-      ]);
+      await setTimeout(async function () {
+        await connection.query(queries.addTemporany, [tableName, folder]);
+      }, 2000);
     }
   } catch (err) {
     console.log(err);
   }
 };
 module.exports.insert = insert;
-const array = [];
-const folderArray = [];
 
-const notImportedFile = (nome_tabella, colonna) => {
+//----------------------------------------------------------------------------------------------
+
+const notImportedFile = async (connection, nome_tabella, colonna) => {
   try {
-    connection.query(queries.createTable);
-
-    const con = connection.query(queries.add, [nome_tabella, colonna]);
-    console.log(`File ${nome_tabella} imported into file_non_importati!!!`);
+    await connection.query(queries.createTable);
+    await connection.query(queries.add, [nome_tabella, colonna]);
   } catch (err) {
     console.err;
   }

@@ -33,7 +33,7 @@ const orderOfInsertion = async (connection, queryCreation) => {
           queryCreation(connection, tableName, fileParse, folder[i]);
         }
 
-        // fs.removeSync(`./samples/working/${folder[i]}/${found}`);
+        fs.removeSync(`./samples/working/${folder[i]}/${found}`);
       }
     }
     return await folder;

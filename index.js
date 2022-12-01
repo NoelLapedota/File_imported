@@ -12,6 +12,7 @@ const {
   checkController,
   workingAnalyzer,
 } = require("./contoller/checkModule.js");
+const { remove } = require("fs-extra");
 
 //--------------------------------------------------------------------------------------------------------
 
