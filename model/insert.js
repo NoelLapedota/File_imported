@@ -5,7 +5,7 @@ const pushToCronology = async (connection, folder) => {
       for (const el of folder) {
         const arrayWithImportedFfiles = [];
 
-        const [rows] = await connection.query(queries.selectTemporany, [el]);
+        const [rows] = await connection.query(prepareStatement.selectTemporany, [el]);
         rows.forEach((element) => {
           if (!arrayWithImportedFfiles.includes(element.dati)) {
             arrayWithImportedFfiles.push(element.dati);
@@ -16,21 +16,21 @@ const pushToCronology = async (connection, folder) => {
 
         const quantytOfFile = unique.length;
 
-        await connection.query(queries.dataImported);
+        await connection.query(prepareStatement.dataImported);
 
         const parse = JSON.stringify(unique);
         if (quantytOfFile >= 1) {
-          await connection.query(queries.addDataImported, [
+          await connection.query(prepareStatement.addDataImported, [
             parse,
             quantytOfFile,
           ]);
-          console.log(queries.addDataImported, [parse, quantytOfFile]);
+          console.log(prepareStatement.addDataImported, [parse, quantytOfFile]);
         }
       }
       console.log("All files have been successfully imported and analyzed !!!");
-      await connection.query(queries.deleteTemporany);
+      await connection.query(prepareStatement.deleteTemporany);
       fs.remove("./samples/working");
-    }, 5000);
+    }, 2000);
   } catch (err) {
     console.err;
   }
@@ -39,18 +39,18 @@ module.exports = pushToCronology;
 
 //----------------------------------------------------------------------------------------------
 const connection = require("../connectMySQL.js");
-const queries = require("./queries.js");
+const prepareStatement = require("./queries.js");
 const fs = require("fs-extra");
 
 const insert = async (connection, query, tableName, folder) => {
   try {
-    await connection.query(queries.temporayTable);
-    await connection.query(queries.temporayTable);
+    await connection.query(prepareStatement.temporayTable);
+    await connection.query(prepareStatement.temporayTable);
 
     const [rows, fields] = await connection.query(`${query}`);
     if (rows.affectedRows > 0) {
       await setTimeout(async function () {
-        await connection.query(queries.addTemporany, [tableName, folder]);
+        await connection.query(prepareStatement.addTemporany, [tableName, folder]);
       }, 2000);
     }
   } catch (err) {

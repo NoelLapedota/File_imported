@@ -41,14 +41,14 @@ const queryCreation = async (connection, tableName, fileParse, folder) => {
       const newKeys = Object.keys(obj);
       const newValues = Object.values(obj);
       //writing the query
-      let query = `INSERT IGNORE INTO ${tableName}(${newKeys}) VALUES (`;
+      let prepareStatement = `INSERT IGNORE INTO ${tableName}(${newKeys}) VALUES (`;
 
       newValues.forEach((el) => {
         const newValueStr = JSON.stringify(el);
-        query += newValueStr + ",";
+        prepareStatement += newValueStr + ",";
       });
       //deletes the last comma!
-      let result = query.slice(0, -1);
+      let result = prepareStatement.slice(0, -1);
       //adds the final parenthesis !!
       result += ")";
       return await insert.insert(connection, result, tableName, folder);

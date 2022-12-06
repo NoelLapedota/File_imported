@@ -34,7 +34,7 @@ const workingAnalyzer = async (checkController) => {
   try {
     const folder = await fs.readdirSync("./samples/working", "utf8");
     for (let i = 0; i < folder.length; i++) {
-      let json = await fs.readdirSync(`./samples/working/${folder[i]}`, "utf8");
+      let json = await fs.readdirSync(`.../samples/working/${folder[i]}`, "utf8");
       for (let e = 0; e < json.length; e++) {
         //they are needed because there are name differences between the schema and the files
         if (json[e] === "storage.json") {
