@@ -1,59 +1,58 @@
 const CronJob = require("cron").CronJob;
 const express = require("express");
 const app = express();
-const cronologyRouting = require("./Routing/cronologyRouting.js");
-const orderOfInsertion = require("./contoller/preExportFile.js");
+const cronologyRouting = require("./routing/cronologyRouting.js");
+const orderOfInsertion = require("./controller/preExportFile.js");
 const queryCreation = require("./model/queriesStamp.js");
 const pushToCronology = require("./model/insert.js");
 const db = require("./connectMySQL");
-const globalErrorHendler = require("./contoller/errorController");
-const { importFile, removeDir, empty } = require("./contoller/import_file.js");
+const globalErrorHendler = require("./controller/errorController");
+const { importFile, removeDir, empty } = require("./controller/importFile.js");
 const {
   checkController,
   workingAnalyzer,
-} = require("./contoller/checkModule.js");
-const { remove } = require("fs-extra");
+} = require("./controller/checkModule.js");
 
 //--------------------------------------------------------------------------------------------------------
 
-const job = new CronJob("05 * * * * *", function () {
-  db()
-    .then((connection) => {
-      console.log("connection to db completed!!");
-      return connection;
-    })
-    .then((connection) => {
-      importFile(empty);
-      return connection;
-    })
+// const job = new CronJob("05 * * * * *", function () {
+db()
+  .then((connection) => {
+    console.log("connection to db completed!!");
+    return connection;
+  })
+  .then((connection) => {
+    importFile(empty);
+    return connection;
+  })
 
-    .then((connection) => {
-      workingAnalyzer(checkController);
-      return connection;
-    })
-    .then(async (connection) => {
-      const resultPromise = await orderOfInsertion(connection, queryCreation);
-      console.log("result promise", resultPromise);
-      return {
-        connection,
-        resultPromise,
-      };
-    })
-    .then(async ({ connection, resultPromise }) => {
-      console.log("push to cronology", resultPromise);
-      await pushToCronology(connection, resultPromise);
-    })
-    .then(() => {
-      removeDir("./samples/files");
-    })
-    .catch((err) => {
-      console.log("error!", err);
-      throw err;
-    });
-});
+  .then((connection) => {
+    workingAnalyzer(checkController);
+    return connection;
+  })
+  .then(async (connection) => {
+    const resultPromise = await orderOfInsertion(connection, queryCreation);
+    console.log("result promise", resultPromise);
+    return {
+      connection,
+      resultPromise,
+    };
+  })
+  .then(async ({ connection, resultPromise }) => {
+    console.log("push to cronology", resultPromise);
+    await pushToCronology(connection, resultPromise);
+    return connection;
+  })
+  // .then(() => {
+  //   removeDir("./samples/files");
+  // })
+  .catch((err) => {
+    console.log("error!", err);
+    throw err;
+  });
+// });
 
-job.start();
-
+// job.start();
 //--------------------------------------------------------------------------------------------------------------------
 
 const router = express.Router();

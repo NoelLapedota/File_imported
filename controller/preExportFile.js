@@ -8,7 +8,7 @@ const specificOrder = {
   clients: "clienti",
   clientsAddresses: "clienti_indirizzi",
   products: "prodotti",
-  list: "prodotti_listini",
+  list: "prodotti_listini", 
   stocks: "prodotti_giacenze",
 };
 
